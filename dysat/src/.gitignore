@@ -1,0 +1,55 @@
+# Folders that Git should ignore
+
+/bin
+/cache
+/data
+/docs
+/out
+/personal
+/visualization
+/model_checkpoints
+/Results
+
+# Python stuff
+*.ipynb_checkpoints/
+*.mypy_cache/
+poetry.lock
+train_days.py
+
+# File extensions that Git should ignore
+
+# vim #
+#######
+*.swp
+
+# tex #
+#######
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
+
+# images #
+##########
+*.pdf
+*.png
+*.docx
+*.csv
+*.html
+
+# data files #
+##############
+*.xls
+*.pkl
+*.npy
+*.Rdata
+*.Rds
+
+# Python #
+##########
+*.pyc
+*.ipynb
+
