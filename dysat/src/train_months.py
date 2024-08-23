@@ -45,8 +45,7 @@ parser.add_argument('--time_steps', type=int, nargs='?', default= ts,           
                     help="total time steps used for train, eval and test")
 
 # Experimental settings.
-# parser.add_argument('--GPU_ID', type=int, nargs='?', default=0,
-#                     help='GPU_ID (0/1 etc.)')
+
 parser.add_argument('--epochs', type=int, nargs='?', default=5000,
                     help='# epochs')
 parser.add_argument('--batch_size', type=int, nargs='?', default=32,  #512 default
@@ -87,28 +86,11 @@ args = parser.parse_args()
 
 
 td = get_time_period(args.time_delta)
-# reading_path = pathlib.Path(f"E:/Dysat_model/data/dataloader/dysat/label_column_static_feats/{td}")  # 1) Original code
-# reading_path = pathlib.Path(f"E:/Dysat_model/data/dataloader/dysat/feature_analysis/{td}")   # 2) this folder use only num of crime patterns as a dynamic features
-# reading_path = pathlib.Path(f"E:/Dysat_model/data/dataloader/dysat/feature_analysis/num_crimes_label_dynamic_feats/{td}")   # 3) this folder use num of crime patterns and labels as 2 dynamic features
-#reading_path = pathlib.Path(f"E:/Dysat_model/data/dataloader/dysat/feature_analysis/num_crimes_Months_2_dynamic_feats/{td}")   # 4) this folder use num of crime patterns and month as dynamic features
-# reading_path = pathlib.Path(f"E:/Dysat_model/data/dataloader/dysat/feature_analysis/num_crimes_Months_exclude_length_2_dynamic_feats/{td}")   # 5) Exclude Length. this folder use num of crime patterns and month as dynamic features
-# reading_path = pathlib.Path(f"E:/Dysat_model/data/dataloader/dysat/feature_analysis/num_crimes_Months_totCrime_2_1_dynamic_stat_feats/{td}")   # 6) Add static feat. this folder use total crime (static), num of crime patterns and month as dynamic features
-reading_path = pathlib.Path(f"E:/Dysat_model/data/dataloader/dysat/feature_analysis/num_crimes_Months_totCrime_highway_2_26_dynamic_stat_feats/{td}")   # 7) Encode Highway. this folder use total crime (static), num of crime patterns and month as dynamic features
-# reading_path = pathlib.Path(f"E:/Dysat_model/data/dataloader/dysat/feature_analysis/num_crimes_totCrime_highway_1_26_1_dynamic_stat_feats/{td}")   # 8) Exclude Months. Encode Highway. this folder use total crime (static), num of crime patterns as dynamic features
+reading_path = pathlib.Path(f"./data/dataloader/dysat/label_column_static_feats/{td}") 
+# reading_path = pathlib.Path(f"E:/Dysat_model/data/dataloader/dysat/label_column_static_feats/{td}")
 
 # Directory to save model and logs
-# save_dir = './Results/Dynamic_features/model_checkpoints' # the results in this folder use only num of crime patterns as dynamic features
-# save_dir = f'./Results/Dynamic_features/num_crimes_1_dynamic_feats/{td}/model_checkpoints' # the results in this folder use class label and num of crime patterns as dynamic features
-# save_dir = f'./Results/Dynamic_features/num_crimes_labels_dynamic_feats/{td}/model_checkpoints' # the results in this folder use class label and num of crime patterns as dynamic features
-# save_dir = f'./Results/Dynamic_features/num_crimes_Months_exclude_length_2_dynamic_feats/{td}/model_checkpoints' # Exclude Length. the results in this folder use num of crime and Month as dynamic features
-# save_dir = f'./Results/Dynamic_features/num_crimes_Months_totCrime_2_1_dynamic_stat_feats/{td}/model_checkpoints' # Add static feat. the results in this folder use num of crime and Month as dynamic features
-# save_dir = f'./Results/Dynamic_features/num_crimes_Months_totCrime_highway_2_26_dynamic_stat_feats/{td}/model_checkpoints' # Encode Highway. this folder use total crime (static), num of crime patterns and month as dynamic features
-# save_dir = f'./Results/Dynamic_features/num_crimes_totCrime_highway_1_26_1_dynamic_stat_feats/{td}/model_checkpoints' # Exclude Months. Encode Highway. this folder use total crime (static), num of crime patterns as dynamic features
-
-### Quantification testing
-
-# save_dir = f'./Results/Dynamic_features/Quant_num_crimes_Months_totCrime_highway_2_26_dynamic_stat_feats/{td}/model_checkpoints' # Exclude Months. Encode Highway. this folder use total crime (static), num of crime patterns as dynamic features
-save_dir = f'./Results/Dynamic_features/Quant_class_1_num_crimes_Months_totCrime_highway_2_26_dynamic_stat_feats/{td}/model_checkpoints' # Exclude Months. Encode Highway. this folder use total crime (static), num of crime patterns as dynamic features
+save_dir = './Results/static_features/model_checkpoints' 
 os.makedirs(save_dir, exist_ok=True)
 
 # Function to save model state and metrics
@@ -125,19 +107,10 @@ def save_logs(logs, filename="logs.json"):
 
 
 print('Loading data...')
-# with open(reading_path / f"dataset_static__{args.time_delta}.pickle", "rb") as f:
-#     dataset = pickle.load(f)
-with open(reading_path / f"dataset_dynamic__{args.time_delta}.pickle", "rb") as f:
+with open(reading_path / f"dataset_static__{args.time_delta}.pickle", "rb") as f:
     dataset = pickle.load(f)
 
 # ## Splitting data into train, validation and test
-# train, val, test = utils.split_data(dataset[0]['graphs'], train_ratio = 0.8, valid_ratio = 0.25, seed=42)
-
-# ## Extract consecutive time serires samples
-# tr_seq = utils.extract_consecutive_samples(train, args.time_steps)
-# val_seq = utils.extract_consecutive_samples(val, args.time_steps)
-# tes_seq = utils.extract_consecutive_samples(test, args.time_steps)
-
 seq_data = utils.extract_consecutive_samples(dataset[0]['graphs'], args.time_steps)
 tr_seq, val_seq, tes_seq = utils.split_data(seq_data, train_ratio = 0.8, valid_ratio = 0.25, seed=42)
 
@@ -162,8 +135,6 @@ opt = torch.optim.AdamW(model.parameters(), lr=args.learning_rate, weight_decay=
 
 logs = {'train_loss': [], 'val_metrics': [], 'test_metrics': [],'epcoh_duration': []}
 logging.basicConfig(filename=os.path.join(save_dir, 'training.log'), level=logging.INFO)
-# scheduler = StepLR(opt, step_size=10, gamma=0.1)
-# scheduler = ReduceLROnPlateau(opt, mode='max', factor=0.1, patience=10)
 
 best_epoch_val = 0
 best_epoch_bal_val = 0
@@ -177,18 +148,13 @@ for epoch in range(args.epochs):
     avg_epoch_loss = np.nanmean(epoch_loss)
     avg_valid_loss = np.nanmean(valid_loss)
     avg_grad_norm = np.mean(gradient_norm)
-    #### scheduler.step()
     
-    # pd.DataFrame(train_pred).to_csv('train_pred_output.csv', index=False)
     torch.cuda.empty_cache()
     print('Training Done!')
 
     print('Validation Start!')
     prc_val_pos, rec_val_pos, f1_val_pos, auc_val_pos, mcc_val, balanced_acc_val, prc_val_neg, rec_val_neg, f1_val_neg, auc_val_neg, thr_val, misclassif_rate_val, tp_val, fp_val, fn_val, tn_val = utils.model_eval(model, val_loader, args.threshold, device, bvalid= True)
     print('Validation Done!')
-
-    # Adjust the learning rate based on the validation metric
-    # scheduler.step(prc_val_pos)
 
     prc_test_pos, rec_test_pos, f1_test_pos, auc_test_pos, mcc_test, balanced_acc_test, prc_test_neg, rec_test_neg, f1_test_neg, auc_test_neg, thr_test, misclassif_rate_test, tp_test, fp_test, fn_test, tn_test = utils.model_eval(model, test_loader, thr_val, device, bvalid= False)
     print('Testing Done!\n')
@@ -247,7 +213,6 @@ for epoch in range(args.epochs):
 print('Epochs Complete!')
 
 # Path to the checkpoint file
-# checkpoint_path = "./Results/Dynamic_features/model_checkpoints/model_best.pth.tar"
 checkpoint_path = f"{save_dir}/model_best.pth.tar"
 
 # Loading the best model
