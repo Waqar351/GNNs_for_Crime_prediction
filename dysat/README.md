@@ -1,7 +1,7 @@
 This repository contains a Python script designed to process and prepare crime data from São Paulo's Department of Public Safety. The script converts crime data into a graph-based format suitable for analysis using graph neural networks, with specific focus on generating temporal features, adjacency matrices, and node labels. The processed data can be used for training models like Dynamic Self-Attention Networks (DySAT) and baseline methods. The core components of this repository include:
 
 1. **Data Loader Script:** This script processes crime data and generates the necessary datasets for training and evaluation. It prepares the data in a format that is compatible with the Dynamic Self-Attention Network (DySAT) model and baseline machine learning methods.  
-   *Note: The input to the data loader is derived from the output of our previously detailed data pipeline. For more information, please refer to the [data pipeline subdirectory](crime-data).*
+   *Note: The input to the data loader is derived from the output of our previously detailed data pipeline. For more information, please refer to the [data pipeline subdirectory](https://github.com/giva-lab/BRACIS2024_GNN/tree/4935f2755d77af2fcb356bf504ce99f760d4ea24/crime-data).*
 
 2. **DySAT Model Script:** This script is used to run the DySAT model, which leverages dynamic graph structures to generate robust node embeddings.
 
