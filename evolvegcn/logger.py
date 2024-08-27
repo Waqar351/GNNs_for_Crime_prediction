@@ -7,7 +7,6 @@ import utils
 import matplotlib.pyplot as plt
 import time
 from sklearn.metrics import average_precision_score
-from sklearn.metrics import roc_auc_score # ADICIONADO
 from scipy.sparse import coo_matrix
 import numpy as np
 
@@ -100,7 +99,7 @@ class Logger():
         else:
             MRR = torch.tensor([0.0])
 
-        ## MUDANÇA PRA PRINTAR ALGUMAS PREDIÇÕES DE TESTE
+        ## Minimal change from the original to print the predictions to make the color map
         if self.set == 'TEST':
             arq_name = "MAP_SOFT_PREDICTIONS.txt"
             np.savetxt(arq_name, predictions[:,1].detach().cpu().numpy())
@@ -188,7 +187,7 @@ class Logger():
         for cl in range(self.num_classes):
             cl_precision, cl_recall, cl_f1 = self.calc_eval_measures_per_class(self.conf_mat_tp, self.conf_mat_fn, self.conf_mat_fp, cl)
             logging.info (self.set+' measures for class %d - precision %0.4f - recall %0.4f - f1 %0.4f ' % (cl,cl_precision,cl_recall,cl_f1))
-            #logging.info (self.conf_mat_tp) ## alteração
+            #logging.info (self.conf_mat_tp) ## ALTERATION
             if str(cl) == str(self.args.target_class):
                 if self.args.target_measure=='Precision' or self.args.target_measure=='prec':
                     eval_measure = cl_precision
@@ -260,11 +259,8 @@ class Logger():
 
     def eval_predicitions(self, predictions, true_classes, num_classes):
         prediction_softmax = torch.softmax(predictions, dim=1)
-        threshold =  0.5 ## ADICIONADO
-        #roc_auc_teste = roc_auc_score(true_classes.detach().cpu().numpy(), prediction_softmax[:,1].detach().cpu().numpy())
-        #print("PRINTANDO COISAS ", roc_auc_teste)
-        #print(prediction_softmax[:,1].min(), prediction_softmax[:,1].max())
-        predicted_classes = prediction_softmax[:,1] >= threshold  #predictions.argmax(dim=1)
+        threshold =  0.5 ## ADDED
+        predicted_classes = prediction_softmax[:,1] >= threshold  # CHANGED
         failures = (predicted_classes!=true_classes).sum(dtype=torch.float)
         error = failures/predictions.size(0)
 

@@ -5,6 +5,7 @@ import pickle
 import time
 import numpy as np
 
+# FULLY MODIFIED FROM ORIGINAL
 
 class Sao_Paulo_DataSet():
     def __init__(self,args):

@@ -5,16 +5,10 @@ import pickle
 import networkx as nx
 import numpy as np
 
+# THIS SCRIPT IS ONLY FOR THE APPLICATION PURPOSE
+
 parser = argparse.ArgumentParser()
 
-
-# parser.add_argument(
-#     "--process_id",
-#     "-id",
-#     default=None,
-#     type=str,
-#     help="Id to idenfity processed data.",
-# )
 
 parser.add_argument(
     "--time_delta",
@@ -27,9 +21,8 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-#folder_name = args.process_id
 
-processed_data_path = pathlib.Path(f"data/processed/sp") #/{folder_name}
+processed_data_path = pathlib.Path(f"data/processed/sp")
 
 output_path = pathlib.Path("data/dataloader/sp/")
 output_path.mkdir(exist_ok=True, parents=True)
@@ -118,10 +111,6 @@ with open(output_path / f"nodes_labels_times-{args.time_delta}.pickle", "wb") as
     pickle.dump(nodes_labels_times, f)
 
 # Processing nodes features
-
-# TODO: Se os nós deixarem de ser estatícos, vamos ter que dar um index diferente para cada nó caso este apareça
-#       em mais de um tempo, já que no modelo EvolveGCN isso seria considerado como nós diferentes,
-
 
 nodes_feats = edges_df.drop(
     columns=[

@@ -25,6 +25,7 @@ import trainer as tr
 
 import logger
 
+# SLIGHT MODIFIED FROM ORIGINAL
 
 def random_param_value(param, param_min, param_max, type='int'):
 	if str(param) is None or str(param).lower()=='none':
