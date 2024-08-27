@@ -70,20 +70,6 @@ def split_data(data, train_ratio, valid_ratio,  seed=42):
     
     return train_data, val_data, test_data
 
-def adjusted_classify_count(y_actual, y_predicted):
-    cm = confusion_matrix(y_actual, y_predicted)
-    prevalence = cm.sum(axis=1) / cm.sum()
-    est_prevalence = cm.sum(axis=0) / cm.sum()
-    adjustment = prevalence / est_prevalence
-    return adjustment
-
-# def adjust_predictions(y_pred_proba, adjustment):
-def adjust_predictions(y_pred_proba, adjustment, adj_ratio):
-    adjusted_proba = y_pred_proba * adjustment * adj_ratio
-    # return np.argmax(adjusted_proba, axis=1)
-    # Normalize to ensure they sum to 1
-    # adjusted_proba = adjusted_proba / np.sum(adjusted_proba)
-    return adjusted_proba
 
 def model_eval(model, data, threshold, device, bvalid):
     model.eval()
@@ -91,7 +77,6 @@ def model_eval(model, data, threshold, device, bvalid):
     y_true = []
     y_pred = []
     binary_pred_output = []
-    # precision, recall, f1, auc, mcc, balanced_acc = 0,0,0,0,0,0
 
     with torch.no_grad():
         
@@ -99,32 +84,9 @@ def model_eval(model, data, threshold, device, bvalid):
             feed_dict = to_device(feed_dict, device)
             pred_output = model(feed_dict)
             act_output = feed_dict[-1].y
-            # pd.DataFrame(pred_output.cpu().numpy()).to_csv(f'Pred_evaluation_output_{idx}.csv', index=False)
-            # pd.DataFrame(act_output.cpu().numpy()).to_csv(f'actual_evaluation_output_{idx}.csv', index=False)
             y_true.extend(act_output.cpu().numpy())
             y_pred.extend(pred_output.cpu().detach().numpy())
-            # print(y_pred)
         
-        # pd.DataFrame(y_pred).to_csv('Pred_evaluation_output.csv', index=False)
-
-        #####
-        ###### Calculation prior proportion
-        # calculate Prior Train
-        # Concatenate labels from all graphs except the last one
-        concatenated_labels = np.concatenate([graph.y.cpu().numpy() for graph in feed_dict[:-1]])
-
-        # Assuming y_test is a numpy array of the labels for the test set
-        unique_classes_tr, counts_tr = np.unique(concatenated_labels, return_counts=True)
-        prior_train = counts_tr / len(concatenated_labels)
-
-
-
-        # Assuming y_test is a numpy array of the labels for the test set
-        unique_classes_te, counts_te = np.unique(act_output.cpu().numpy(), return_counts=True)
-        prior_test = counts_te / len(act_output.cpu().numpy())
-        adjust_ratio = prior_test/prior_train
-        
-        #####
 
         y_pred = np.array(y_pred)
 
@@ -143,22 +105,8 @@ def model_eval(model, data, threshold, device, bvalid):
         else:
             threshold = threshold
 
-        # binary_pred_output_old = [1 if pred >= threshold else 0 for pred in y_pred]
-        binary_pred_output_old = [1 if pred >= 0.5 else 0 for pred in y_pred]
+        binary_pred_output = [1 if pred >= threshold else 0 for pred in y_pred]
 
-        ### Adjust the Classifier output using Quantification
-        # Estimate the class distribution in the test data
-        adjustment = adjusted_classify_count(y_true, binary_pred_output_old)
-
-        # breakpoint()
-        # Adjust the predictions
-        # adjusted_proba = adjust_predictions(y_pred, adjustment[0])
-        adjusted_proba = adjust_predictions(y_pred, adjustment[0], adjust_ratio[0])
-
-        # binary_pred_output = [1 if pred >= threshold else 0 for pred in adjusted_proba]
-        binary_pred_output = [1 if pred >= threshold else 0 for pred in adjusted_proba]
-
-        # breakpoint()
         # Metrics for positive class
         prec_pos = precision_score(y_true, binary_pred_output, pos_label = 1)
         rec_pos = recall_score(y_true, binary_pred_output, pos_label = 1)
@@ -175,8 +123,6 @@ def model_eval(model, data, threshold, device, bvalid):
         rec_neg = recall_score(y_true, binary_pred_output, pos_label = 0)
         f1_neg = f1_score(y_true, binary_pred_output, pos_label = 0)
         auc_neg = roc_auc_score(y_true, -y_pred)
-
-
 
         return prec_pos, rec_pos, f1_pos, auc_pos, mcc, balanced, prec_neg, rec_neg, f1_neg, auc_neg, threshold, misclassification_rate, tp, fp, fn, tn
     
@@ -205,7 +151,6 @@ def model_train(epoch, model, train_data,val_data, optimizer, device):
         logging.info(f"Epoch {epoch+1}, Sample {idx + 1},Gradient_Norm: {grad_norm}")
         grad_norm_all.append(grad_norm)
         ################################################################
-        # nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
         epoch_loss.append(loss.item())
         train_pred.append(pred)

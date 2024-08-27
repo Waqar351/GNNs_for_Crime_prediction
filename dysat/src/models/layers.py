@@ -1,10 +1,10 @@
 # -*- encoding: utf-8 -*-
 '''
-@File    :   layers.py
-@Time    :   2021/02/18 14:30:13
-@Author  :   Fei gao 
-@Contact :   feig@mail.bnu.edu.cn
-BNU, Beijing, China
+@File    :   model.py
+@Time    :   2024/08/27 21:10:00
+@Author  :   Waqar Hassan 
+@Contact :   waqar_comsat@yahoo.com
+USP, Sao Paulo, Brazil
 '''
 import torch
 import torch.nn as nn

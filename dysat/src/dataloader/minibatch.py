@@ -1,6 +1,3 @@
-# from typing import DefaultDict
-# from collections import defaultdict
-# from torch.functional import Tensor
 from torch_geometric.data import Data
 import torch
 import numpy as np
@@ -53,20 +50,6 @@ class MyDataset(Dataset):
         featur = np.array(feat.todense())
         label = featur[:, -1]
         return label
-
-    # def construct_degs(self):
-    #     """ Compute node degrees in each graph snapshot."""
-    #     # different from the original implementation
-    #     # degree is counted using multi graph
-    #     degs = []
-    #     for i in range(self.min_t, self.time_steps):
-    #         print('timestep in minibatch', i)
-    #         G = self.graphs[i]
-    #         deg = []
-    #         for nodeid in G.nodes():
-    #             deg.append(G.degree(nodeid))
-    #         degs.append(deg)
-    #     return degs
 
     def _build_pyg_graphs(self):        # It receives all features and adjacency matrix togather
         pyg_graphs = []
@@ -151,21 +134,3 @@ def select_time_steps(time_delta):
     else:
         raise ValueError("Invalid time delta. Please use 'D' for Days, 'M' for Months, or 'Y' for Years.")
     
-def calculate_crime_per_node(dataframe):
-        # Calculate the number of crime occurrences for each node
-    crime_counts = dataframe['index_right'].value_counts()
-    crime_counts_df = pd.DataFrame({'node': crime_counts.index, 'crime_count': crime_counts.values})
-    crime_counts_df = crime_counts_df.sort_values(by='node')
-
-    full_node_range = pd.DataFrame({'node': range(4121)})
-    # Initialize the 'crime_count' column to 0
-    full_node_range['crime_count'] = 0
-    # Merge with the existing DataFrame to fill in crime counts
-    merged_df = pd.merge(full_node_range, crime_counts_df, 
-                     on='node', how='left')
-
-    # Fill NaN values in 'crime_count' with 0 for missing nodes
-    merged_df['crime_count'] = merged_df['crime_count_y'].fillna(0)
-    merged_df = merged_df.drop(columns=['crime_count_x',	'crime_count_y'])
-
-    return merged_df

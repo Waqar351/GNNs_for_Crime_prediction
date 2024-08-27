@@ -114,6 +114,7 @@ with open(reading_path / f"dataset_static__{args.time_delta}.pickle", "rb") as f
 seq_data = utils.extract_consecutive_samples(dataset[0]['graphs'], args.time_steps)
 tr_seq, val_seq, tes_seq = utils.split_data(seq_data, train_ratio = 0.8, valid_ratio = 0.25, seed=42)
 
+breakpoint()
 ## Create datasets
 train_dataset = utils.GraphSequenceDataset(tr_seq)
 val_dataset = utils.GraphSequenceDataset(val_seq)
