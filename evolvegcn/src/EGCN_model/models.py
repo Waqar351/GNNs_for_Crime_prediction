@@ -28,7 +28,7 @@ class Sp_GCN(torch.nn.Module):
         #A_list: T, each element sparse tensor
         #take only last adj matrix in time
         Ahat = A_list[-1]
-        #Ahat: NxN ~ 30k
+        #Ahat: NxN 
         #sparse multiplication
 
         # Ahat NxN
@@ -51,7 +51,7 @@ class Sp_Skip_GCN(Sp_GCN):
         #A_list: T, each element sparse tensor
         #take only last adj matrix in time
         Ahat = A_list[-1]
-        #Ahat: NxN ~ 30k
+        #Ahat: NxN 
         #sparse multiplication
 
         # Ahat NxN
@@ -190,4 +190,4 @@ class Classifier(torch.nn.Module):
                                                        out_features = out_features))
 
     def forward(self,x):
-        return self.mlp(x.float()) # MUDEI O TIPO
+        return self.mlp(x.float()) # CHANGED THE TYPE

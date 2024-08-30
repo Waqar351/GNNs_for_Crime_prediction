@@ -22,14 +22,14 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-processed_data_path = pathlib.Path(f"data/processed/sp")
+processed_data_path = pathlib.Path(f"./data/processed/sp")
 
-output_path = pathlib.Path("data/dataloader/sp/")
+output_path = pathlib.Path("./data/dataloader_format_data/sp/")
 output_path.mkdir(exist_ok=True, parents=True)
 
 assert (
     processed_data_path.is_dir()
-), "Invalid processed data. Did you put the processed data in the /data/processed/sp folder?"
+), "Invalid processed data. Did you put the processed data in the /src/dataloader/data/processed/sp folder?"
 
 
 with open(processed_data_path / "crime_nodes_dataframe.pickle", "rb") as f:

@@ -1,9 +1,9 @@
 data: sp #HELP: arxiv, bitcoin, aml_sim, dbg, elliptic, elliptic_temporal,sp
 sp_args:
-  edges_file: ./data/dataloader/sp/edges.pickle
-  nodes_file: ./data/dataloader/sp/nodes.pickle
-  nodes_feats_file: ./data/dataloader/sp/nodes_feats.pickle
-  nodes_labels_times_file: ./data/dataloader/sp/nodes_labels_times-M.pickle
+  edges_file: ./../dataloader/data/dataloader_format_data/sp/edges.pickle
+  nodes_file: ./../dataloader/data/dataloader_format_data/sp/nodes.pickle
+  nodes_feats_file: ./../dataloader/data/dataloader_format_data/sp/nodes_feats.pickle
+  nodes_labels_times_file: ./../dataloader/data/dataloader_format_data/sp/nodes_labels_times-M.pickle
   aggr_time: 1
 
 use_cuda: True
